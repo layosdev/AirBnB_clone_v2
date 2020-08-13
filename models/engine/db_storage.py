@@ -37,7 +37,7 @@ class DBStorage:
                 key = "{}.{}".format(cls, row.id)
                 my_dict[key] = row
         else:
-            for k in ["State", "City"]:
+            for k in ["State", "City", "User"]:
                 for row in self.__session.query(eval(k)).all():
                     key = "{}.{}".format(row.__class__.__name__, row.id)
                     my_dict[key] = row
