@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """ database engine storage """
 from sqlalchemy import create_engine
-from sqlalchemy.orm import relationship, scoped_session, sessionmaker
+from sqlalchemy.orm import relationship, scoped_session, sessionmaker, Query
 from models.base_model import BaseModel, Base
 from models.user import User
 from models.place import Place
@@ -24,7 +24,8 @@ class DBStorage:
                                       .format(os.getenv('HBNB_MYSQL_USER'),
                                               os.getenv('HBNB_MYSQL_PWD'),
                                               os.getenv('HBNB_MYSQL_HOST'),
-                                              os.getenv('HBNB_MYSQL_DB')), pool_pre_ping=True)
+                                              os.getenv('HBNB_MYSQL_DB')),
+                                      pool_pre_ping=True)
         if os.getenv('HBNB_MYSQL_HOST') == "test":
             Base.metadata.drop_all(self.__engine)
 
@@ -32,21 +33,21 @@ class DBStorage:
         """Returns a dictionary of models currently in storage"""
         my_dict = {}
         if cls:
-            for row in self.__session.query(cls).all():
+            for row in self.__session.query(eval(cls)).all():
                 key = "{}.{}".format(cls, row.id)
                 my_dict[key] = row
         else:
-            for row in self.__session.query().all():
-                key = "{}.{}".format(row.__class__.__name__, row.id)
-                my_dict[key] = row
+            for k in ["State", "City"]:
+                for row in self.__session.query(eval(k)).all():
+                    key = "{}.{}".format(row.__class__.__name__, row.id)
+                    my_dict[key] = row
         return my_dict
 
     def new(self, obj):
         """ comment """
         self.__session.add(obj)
-        self.save()
 
-    def save(self, obj):
+    def save(self):
         """ comment """
         self.__session.commit()
 
