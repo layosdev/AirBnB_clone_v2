@@ -64,3 +64,7 @@ class FileStorage:
                 del self.__objects[to_delete]
         else:
             pass
+
+    def close(self):
+        """ close """
+        self.reload()
